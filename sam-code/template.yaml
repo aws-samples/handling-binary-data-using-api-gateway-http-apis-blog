@@ -1,0 +1,141 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this
+# software and associated documentation files (the "Software"), to deal in the Software
+# without restriction, including without limitation the rights to use, copy, modify,
+# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  http-api-blog
+
+  Sample SAM Template for http-api-blog
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+
+  # Echo API for base64 intro -------------------------------------------------
+  #
+  # * Define Api explicitly because we need it to be a HTTP API
+  # * Let SAM implicitly define an execution role
+  # * Create and attach two functions to the API on different URIs
+
+  EchoHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+
+  # Simple echo API, whatever JSON comes in through the event object
+  # is echoed back as the response message body
+  EchoJsonLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: echo_api/
+      Handler: echo_json.lambda_handler
+      Runtime: python3.8
+      Events:
+        EchoJsonHttp:
+          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /echojson
+            Method: any
+            ApiId: !Ref EchoHttpApi
+
+  # Echo message body and encoding. This endpoint will copy 
+  # * incoming headers         into response headers
+  # * incoming body            into response body 
+  # * incoming isBase64Encoded into response isBase64Encoded
+  EchoRawLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: echo_api/
+      Handler: echo_raw.lambda_handler
+      Runtime: python3.8
+      Events:
+        EchoRawHttp:
+          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /echoraw
+            Method: any
+            ApiId: !Ref EchoHttpApi
+
+  # Noise API for core blog post ----------------------------------------------
+  #
+  # * Define Api explicitly because we need it to be a HTTP API
+  # * Define Lambda execution role explicitly to make it easy to expand later
+  # * Create and attach a single function to the API 
+
+  NoiseHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+      CorsConfiguration: 
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - "Access-Control-Allow-Origin"
+          - "Content-Type"
+          - "X-Requested-With"
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+
+  NoiseLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  NoiseLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: img_api/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt NoiseLambdaExecutionRole.Arn
+      Events:
+        NoiseGenHttp:
+          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi
+          Properties:
+            Path: /noise
+            Method: any
+            ApiId: !Ref NoiseHttpApi
+
+Outputs:
+
+  # Outputs for echo API
+  EchoJsonHttpApi:
+    Description: "API Gateway HTTP endpoint URL for Prod stage for echo function"
+    Value: !Sub "https://${EchoHttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod/echojson"
+  EchoRawHttpApi:
+    Description: "API Gateway HTTP endpoint URL for Prod stage for echo function"
+    Value: !Sub "https://${EchoHttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod/echoraw"
+
+  # Outputs for noise API
+  NoiseLambdaFunction:
+    Description: "Lambda Function ARN for generating noise images"
+    Value: !GetAtt NoiseLambdaFunction.Arn
+  NoiseHttpApi:
+    Description: "API Gateway HTTP endpoint URL for Prod stage for noise function"
+    Value: !Sub "https://${NoiseHttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod/noise"

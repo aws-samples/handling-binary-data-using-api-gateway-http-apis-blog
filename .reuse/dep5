@@ -1,0 +1,14 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Handling binary data using API Gateway HTTP APIs
+Upstream-Contact:  <>
+Source: 
+
+# Sample paragraph, commented out:
+#
+# Files: src/*
+# Copyright: $YEAR $NAME <$CONTACT>
+# License: ...
+
+Files: *
+Copyright: 2021 Copyright Amazon.com, Inc. or its affiliates.
+License: MIT-0

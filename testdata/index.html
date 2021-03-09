@@ -1,0 +1,103 @@
+<html>
+    <!-- Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this
+    software and associated documentation files (the "Software"), to deal in the Software
+    without restriction, including without limitation the rights to use, copy, modify,
+    merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+    PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.     -->
+    <head>
+        <style type="text/css">
+            .line   { padding: 3px; width: 100%; }
+            .canvas { border:1px solid; width: 300px; height: 80px; }
+            .status { border:1px solid; width: 606px; white-space: pre-wrap; }
+        </style>
+    </head>
+    <body>
+        <div class="line">
+            <canvas id="srcImage" class="canvas"></canvas>
+            <img    id="dstImage"     class="canvas">
+        </div>
+        <div class="line">
+            API URL: <input id="apiUrl" type="text" />
+        </div>
+        <div class="line">
+            <input id="submit" type="button" value="Submit">
+        </div>
+        <div class="line">
+            <div id="status" class="status">Waiting for mouse input and submit</div>
+        </div>
+    
+        <script>
+            var prevX = 0;
+            var prevY = 0;
+            const srcImage = document.getElementById("srcImage")
+            const dstImage = document.getElementById("dstImage");
+            const status   = document.getElementById("status");
+            const submit   = document.getElementById("submit");
+
+            function getRandomColour(){
+                var red = Math.floor(Math.random()* 255);
+                var green = Math.floor(Math.random() * 255);
+                var blue = Math.floor(Math.random() * 255);
+    
+                return "rgb("+red+","+green+"," +blue+" )";  
+            }
+    
+            srcImage.onmousemove = function(e) {
+                let ctx = srcImage.getContext('2d');
+                ctx.beginPath()
+                ctx.strokeStyle=getRandomColour()
+                ctx.lineWidth=20
+                ctx.moveTo(prevX,prevY)
+                ctx.lineTo(e.clientX, e.clientY);
+                ctx.stroke();
+                prevX = e.clientX
+                prevY = e.clientY
+            };
+        
+            // Loosely based on https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
+            submit.onclick = async function () {
+                var httpApi = apiUrl.value + "?min=92&max=192";
+
+                status.innerText = "Encoding image you created;\n";
+                
+                new Promise(resolve => srcImage.toBlob(resolve, 'image/jpeg'))
+                    .then(blob => { 
+                        status.innerText = status.innerText + "Making POST API call to " + httpApi + ";\n";
+                        fetch(httpApi, {
+                            method: 'POST',
+                            // You can explicity send accept headers to the API to
+                            // override browser default:
+                            // headers: { 'accept': 'image/png'},
+                            body: blob
+                        })
+                        .then(response => {
+                            if (response.ok) { return response.blob() }
+                            throw new Error("Received error from API");
+                        })
+                        .then(imageBlob => URL.createObjectURL(imageBlob))
+                        .then(dstImageUrl => {
+                            status.innerText = status.innerText + "Rendering received noise image;\n";
+                            dstImage.src = dstImageUrl})
+                        .catch(error => {
+                            status.innerText = status.innerText + "Failed to fetch and render image;\n";
+                        })
+                        .then(() => {
+                            status.innerText = status.innerText + "Waiting for mouse input and submit;\n";
+                        })
+                    })
+                    .catch(error => {
+                        status.innerText = status.innerText + "Failed extract source image;\n";
+                    })
+            }        
+        </script>    
+    </body>
+</html>

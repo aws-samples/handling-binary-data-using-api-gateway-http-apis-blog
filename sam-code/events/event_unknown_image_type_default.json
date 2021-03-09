@@ -1,0 +1,35 @@
+{
+    "version": "2.0",
+    "routeKey": "GET /noise",
+    "rawPath": "/prod/noise",
+    "rawQueryString": "",
+    "headers": {
+        "accept": "image/unknown",
+        "accept-encoding": "gzip, deflate",
+        "content-length": "0",
+        "host": "abdcefgh.execute-api.us-west-2.amazonaws.com",
+        "user-agent": "python-requests/2.25.1",
+        "x-amzn-trace-id": "Root=1-603aacf4-194c4fc87bedc82f557604d6",
+        "x-forwarded-for": "1.1.1.1",
+        "x-forwarded-port": "443",
+        "x-forwarded-proto": "https"
+    },
+    "requestContext": {
+        "accountId": "111122223333",
+        "apiId": "abdcefgh",
+        "domainName": "abdcefgh.execute-api.us-west-2.amazonaws.com",
+        "domainPrefix": "abdcefgh",
+        "http": {
+            "method": "GET",
+            "path": "/prod/noise",
+            "protocol": "HTTP/1.1",
+            "sourceIp": "1.1.1.1",
+            "userAgent": "python-requests/2.25.1"},
+        "requestId": "ba_2SgG_PHcESww=",
+        "routeKey": "GET /noise",
+        "stage": "prod",
+        "time": "27/Feb/2021:20:35:00 +0000",
+        "timeEpoch": 1614458100901
+    },
+    "isBase64Encoded": false
+}
