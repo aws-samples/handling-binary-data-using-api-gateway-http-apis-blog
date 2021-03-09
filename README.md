@@ -8,16 +8,16 @@ The demo uses [Serverless Application Model (SAM)](https://aws.amazon.com/server
 
 Requirements:
 
-* AWS SAM CLI: [installation instructions(https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)]
+* AWS SAM CLI: [installation instructions](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * An AWS account: [create an AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/) if you do not already have one.
-* AWS credentials with permissions to create roles: see the [SAM CLI setup instructions(https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-mac.html#serverless-sam-cli-install-mac-iam-permissions)] for details. 
+* AWS credentials with permissions to create roles: see the [SAM CLI setup instructions](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-mac.html#serverless-sam-cli-install-mac-iam-permissions) for details. 
 
 ## Running this code
 
-[Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this repository. There are multiple revisions of the code to support the blog post but you likely only want to look at the final version in `step-3` so within the newly created directory run:
+[Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this repository. There are multiple revisions of the code to support the blog post but you likely only want to look at the final version in `sam-code` so within the newly created directory run:
 
 ```bash
-cd step-3
+cd sam-code
 sam build --use-container
 sam deploy --guided 
 ```
