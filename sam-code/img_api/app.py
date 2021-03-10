@@ -67,7 +67,7 @@ def encode_img(image,accept_string):
     else:
         return { "success": False, "mimetype": "text/plain", "data": "Unknown encoding requested" }
 
-def decode_img(img_data,mime_type):
+def decode_img(img_data,mime_type,xdim,ydim):
     # If the content type claims we received an image/binary:
     if re.match("image/",mime_type) or mime_type=='application/x-www-form-urlencoded':
         # This function relies entirely on PIL to identify image type, no mime type checking
@@ -123,7 +123,8 @@ def lambda_handler(event, context):
         # Get a PIL image object from data and overlay noise
         image = decode_img(
             img_data, 
-            event.get("headers",{}).get("content-type","text/plain")
+            event.get("headers",{}).get("content-type","text/plain"),
+            xdim_requested,ydim_requested
             )
         image = overlay_noise_on_image(image,cmin_requested,cmax_requested)
         result = encode_img(image,accept)
