@@ -1,6 +1,6 @@
 # Handling binary data using API Gateway HTTP APIs
 
-This is supporting code for AWS blog "Handling binary data using API Gateway HTTP APIs" - https://issues.amazon.com/ComputeBlog-957
+This is supporting code for AWS blog [Handling binary data using Amazon API Gateway HTTP APIs](https://aws.amazon.com/blogs/compute/handling-binary-data-using-amazon-api-gateway-http-apis/)
 
 ## Pre-requisites
 
