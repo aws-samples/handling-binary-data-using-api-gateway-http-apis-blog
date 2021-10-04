@@ -48,9 +48,12 @@ When the deployment process is done see the output for the API URL:
 The following are described in more details in the blog post. 
 
 ```bash
-ECHO_RAW_API=[API_URL_HERE]
-ECHO_JSON_API=[API_URL_HERE]
-NOISE_API=[API_URL_HERE]
+# Use the name from sam deploy step
+STACK_NAME=http-api
+
+ECHO_RAW_API=$( aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query "Stacks[*].Outputs[?OutputKey=='EchoRawHttpApi'].OutputValue" --output text )
+ECHO_JSON_API=$( aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query "Stacks[*].Outputs[?OutputKey=='EchoJsonHttpApi'].OutputValue" --output text )
+NOISE_API=$( aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query "Stacks[*].Outputs[?OutputKey=='NoiseHttpApi'].OutputValue" --output text )
 
 # Echo back original binary POST submission 
 # We use a simple GIF iamge created with ImageMagic: 
