@@ -48,7 +48,7 @@ When the deployment process is done see the output for the API URL:
 The following are described in more details in the blog post. 
 
 ```bash
-# Use the name from sam deploy step
+# Cloudformation stack name - check samconfig.toml if you don't know
 STACK_NAME=http-api
 
 ECHO_RAW_API=$( aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query "Stacks[*].Outputs[?OutputKey=='EchoRawHttpApi'].OutputValue" --output text )
@@ -154,7 +154,7 @@ Basic validation can also be done via pytest. Ensure you have `pytest` and `pyte
 
 ```bash
 # Cloudformation stack name - check samconfig.toml if you don't know
-export AWS_SAM_STACK_NAME=http-api-blog-step-1 
+export AWS_SAM_STACK_NAME=http-api 
 
 # Region in which the stack is deployed - check samconfig.toml if you don't know
 export AWS_REGION=us-west-2 
